@@ -9,6 +9,8 @@ var ground1;
 var box1,box2,box3,box4,box5,box6,slingshot1;
 var cannonball1,rope1;
 var gameState;
+var score;
+var bg;
 
 function preload()
 {
@@ -23,6 +25,7 @@ function setup() {
 	world = engine.world;
 
 	//Create the Bodies Here.
+	score = 0;
 	ground1 = new Ground(800,550,300,40);
 	box1 = new Box(800,500,80,80);
 	box2 = new Box(760,500,80,80);
@@ -33,6 +36,7 @@ function setup() {
 	slingshot1 = new Slingshot(600,350,10,10);
 	cannonball1 = new Cannonball(600,-200,30);
 	rope1 = new Rope(cannonball1.body,slingshot1.body)
+	
 
 	Engine.run(engine);
   
@@ -41,7 +45,8 @@ function setup() {
 
 function draw() {
 	rectMode(CENTER);
-	background("lightgray");
+	background("bg");
+	text("Score: " + score,680,20);
 
 	ground1.display();
 	box1.display();
@@ -62,7 +67,7 @@ function draw() {
 
 function mouseDragged(){
     if (gameState!=="launched"){
-        Matter.Body.setPosition(cannonball1.body, {x: mouseX , y: mouseY});
+        Matter.Body.setPosition(cannonball1.body, {x: mouseX, y: mouseY});
     }
 }
 
@@ -70,4 +75,17 @@ function mouseDragged(){
 function mouseReleased(){
     rope1.fly();
     gameState = "launched";
+}
+
+async function getBackgroundImage(){
+    var response = await fetch ("http://worldtimeapi.org/api/timezone/America/New_York");
+    var responseJSON = await response.json();
+    var dt = responseJSON.datetime;
+    var hour = dt.slice(11,13);
+    if(hour >= 06 && hour <= 18){
+        bg = "bg.png";
+    }else {
+        bg = "white";
+    }
+    backgroundImg = loadImage(bg);
 }
